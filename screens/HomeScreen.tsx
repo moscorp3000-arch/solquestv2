@@ -27,20 +27,18 @@ const DIFF_COLORS: Record<string, string> = {
 };
 
 export default function HomeScreen({
-  onStartQuiz,
-  onViewBadges,
-  onViewLeaderboard,
-  onPlayNext,
-  onDevReset,
-  completedModules,
-  totalXP,
-  streak,
+  onStartQuiz, onViewBadges, onViewLeaderboard, onPlayNext, onDevReset,
+  onPrivacy, onTerms, onLicenses,
+  completedModules, totalXP, streak,
 }: {
   onStartQuiz: (moduleId: number) => void;
   onViewBadges: () => void;
   onViewLeaderboard: () => void;
   onPlayNext: () => void;
   onDevReset: () => void;
+  onPrivacy: () => void;
+  onTerms: () => void;
+  onLicenses: () => void;
   completedModules: number[];
   totalXP: number;
   streak: number;
@@ -52,32 +50,18 @@ export default function HomeScreen({
     : '';
 
   const handleDisconnect = () => {
-    Alert.alert(
-      'Disconnect Wallet',
-      'Are you sure you want to disconnect your wallet?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Disconnect',
-          style: 'destructive',
-          onPress: async () => {
-            await transact(async wallet => {
-              await deauthorizeSession(wallet);
-            });
-          },
-        },
-      ]
-    );
+    Alert.alert('Disconnect Wallet', 'Are you sure you want to disconnect your wallet?', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Disconnect', style: 'destructive', onPress: async () => {
+        await transact(async wallet => { await deauthorizeSession(wallet); });
+      }},
+    ]);
   };
 
   const handleModulePress = (moduleId: number) => {
     const unlocked = isModuleUnlocked(moduleId, completedModules);
     if (!unlocked) {
-      Alert.alert(
-        '🔒 Locked',
-        `Complete Module ${moduleId - 1} first to unlock this module.`,
-        [{ text: 'OK' }]
-      );
+      Alert.alert('🔒 Locked', `Complete Module ${moduleId - 1} first to unlock this module.`, [{ text: 'OK' }]);
       return;
     }
     onStartQuiz(moduleId);
@@ -87,7 +71,6 @@ export default function HomeScreen({
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <View>
           <Text style={styles.headerTitle}>SolQuest ⚡</Text>
@@ -106,7 +89,6 @@ export default function HomeScreen({
         </View>
       </View>
 
-      {/* Progress */}
       <View style={styles.progressContainer}>
         <View style={styles.progressRow}>
           <Text style={styles.progressLabel}>{completedModules.length}/{MODULES.length} modules completed</Text>
@@ -117,7 +99,6 @@ export default function HomeScreen({
         </View>
       </View>
 
-      {/* Bottom nav */}
       <View style={styles.navBar}>
         <TouchableOpacity style={styles.navItem}>
           <Text style={styles.navIcon}>🏠</Text>
@@ -141,21 +122,16 @@ export default function HomeScreen({
       </View>
 
       <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
-        {/* Recommended */}
         <TouchableOpacity style={styles.recommendedCard} onPress={onPlayNext}>
           <Text style={styles.recommendedLabel}>RECOMMENDED</Text>
           <Text style={styles.recommendedTitle}>
-            {completedModules.length === 0
-              ? 'Start Here: Crypto History'
-              : completedModules.length >= 10
-              ? '🏆 All modules complete!'
+            {completedModules.length === 0 ? 'Start Here: Crypto History'
+              : completedModules.length >= 10 ? '🏆 All modules complete!'
               : `Continue: Module ${completedModules.length + 1}`}
           </Text>
           <Text style={styles.recommendedDesc}>
-            {completedModules.length === 0
-              ? 'Begin your crypto learning journey.'
-              : completedModules.length >= 10
-              ? 'You have mastered all modules. Legend!'
+            {completedModules.length === 0 ? 'Begin your crypto learning journey.'
+              : completedModules.length >= 10 ? 'Verify your wallet for Season 2 airdrop!'
               : `Pick up where you left off — ${MODULES.length - completedModules.length} modules remaining.`}
           </Text>
           <View style={styles.recommendedMeta}>
@@ -170,15 +146,10 @@ export default function HomeScreen({
         {MODULES.map((module) => {
           const unlocked = isModuleUnlocked(module.id, completedModules);
           const completed = completedModules.includes(module.id);
-
           return (
             <TouchableOpacity
               key={module.id}
-              style={[
-                styles.moduleCard,
-                completed && styles.moduleCardCompleted,
-                !unlocked && styles.moduleCardLocked,
-              ]}
+              style={[styles.moduleCard, completed && styles.moduleCardCompleted, !unlocked && styles.moduleCardLocked]}
               onPress={() => handleModulePress(module.id)}
               activeOpacity={unlocked ? 0.7 : 1}>
               <View style={[styles.moduleIcon, !unlocked && styles.moduleIconLocked]}>
@@ -187,9 +158,7 @@ export default function HomeScreen({
                 </Text>
               </View>
               <View style={styles.moduleInfo}>
-                <Text style={[styles.moduleTitle, !unlocked && styles.moduleTitleLocked]}>
-                  {module.title}
-                </Text>
+                <Text style={[styles.moduleTitle, !unlocked && styles.moduleTitleLocked]}>{module.title}</Text>
                 <Text style={[styles.moduleDesc, !unlocked && { opacity: 0.3 }]}>
                   {unlocked ? module.desc : `Complete Module ${module.id - 1} to unlock`}
                 </Text>
@@ -210,6 +179,22 @@ export default function HomeScreen({
             </TouchableOpacity>
           );
         })}
+
+        {/* Footer */}
+        <View style={styles.footerLinks}>
+          <TouchableOpacity onPress={onPrivacy}>
+            <Text style={styles.footerLink}>Privacy Policy</Text>
+          </TouchableOpacity>
+          <Text style={styles.footerDivider}>·</Text>
+          <TouchableOpacity onPress={onTerms}>
+            <Text style={styles.footerLink}>Terms of Use</Text>
+          </TouchableOpacity>
+          <Text style={styles.footerDivider}>·</Text>
+          <TouchableOpacity onPress={onLicenses}>
+            <Text style={styles.footerLink}>Licenses</Text>
+          </TouchableOpacity>
+        </View>
+        <Text style={styles.footerVersion}>SolQuest v1.0 — Built for Solana Mobile</Text>
         <View style={{ height: 100 }} />
       </ScrollView>
     </SafeAreaView>
@@ -218,26 +203,13 @@ export default function HomeScreen({
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#050A14' },
-  header: {
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    paddingHorizontal: 20, paddingVertical: 14,
-    borderBottomWidth: 1, borderBottomColor: 'rgba(125,239,251,0.1)',
-  },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: 'rgba(125,239,251,0.1)' },
   headerTitle: { fontSize: 22, fontWeight: '900', color: '#FFFFFF' },
   headerSub: { fontSize: 12, color: '#7DEFFB', marginTop: 2 },
   headerRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  xpBadge: {
-    backgroundColor: 'rgba(125,239,251,0.1)', borderRadius: 10,
-    paddingHorizontal: 10, paddingVertical: 6,
-    borderWidth: 1, borderColor: 'rgba(125,239,251,0.25)',
-  },
+  xpBadge: { backgroundColor: 'rgba(125,239,251,0.1)', borderRadius: 10, paddingHorizontal: 10, paddingVertical: 6, borderWidth: 1, borderColor: 'rgba(125,239,251,0.25)' },
   xpText: { fontSize: 13, color: '#7DEFFB', fontWeight: '700' },
-  disconnectBtn: {
-    paddingHorizontal: 10, paddingVertical: 6, borderRadius: 10,
-    backgroundColor: 'rgba(255,68,68,0.08)',
-    borderWidth: 1, borderColor: 'rgba(255,68,68,0.2)',
-    alignItems: 'center',
-  },
+  disconnectBtn: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 10, backgroundColor: 'rgba(255,68,68,0.08)', borderWidth: 1, borderColor: 'rgba(255,68,68,0.2)', alignItems: 'center' },
   disconnectIcon: { fontSize: 14 },
   disconnectLabel: { fontSize: 9, color: 'rgba(255,100,100,0.8)', fontWeight: '600', marginTop: 1 },
   progressContainer: { paddingHorizontal: 20, paddingVertical: 12 },
@@ -247,10 +219,7 @@ const styles = StyleSheet.create({
   progressTrack: { height: 4, backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 999 },
   progressFill: { height: '100%', backgroundColor: '#7DEFFB', borderRadius: 999 },
   scroll: { flex: 1, paddingHorizontal: 16 },
-  recommendedCard: {
-    backgroundColor: 'rgba(125,239,251,0.05)', borderRadius: 16, padding: 16,
-    borderWidth: 1, borderColor: 'rgba(125,239,251,0.15)', marginBottom: 20, marginTop: 8,
-  },
+  recommendedCard: { backgroundColor: 'rgba(125,239,251,0.05)', borderRadius: 16, padding: 16, borderWidth: 1, borderColor: 'rgba(125,239,251,0.15)', marginBottom: 20, marginTop: 8 },
   recommendedLabel: { fontSize: 11, color: '#7DEFFB', fontWeight: '700', letterSpacing: 1, marginBottom: 6 },
   recommendedTitle: { fontSize: 18, fontWeight: '800', color: '#FFFFFF', marginBottom: 4 },
   recommendedDesc: { fontSize: 13, color: 'rgba(255,255,255,0.5)', marginBottom: 10 },
@@ -258,27 +227,11 @@ const styles = StyleSheet.create({
   metaText: { fontSize: 12, color: 'rgba(255,255,255,0.4)' },
   metaXP: { fontSize: 12, color: '#7DEFFB', fontWeight: '700' },
   sectionTitle: { fontSize: 16, fontWeight: '800', color: '#FFFFFF', marginBottom: 12 },
-  moduleCard: {
-    flexDirection: 'row', alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 16,
-    padding: 14, marginBottom: 10, borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.07)', gap: 12,
-  },
-  moduleCardCompleted: {
-    borderColor: 'rgba(20,241,149,0.3)',
-    backgroundColor: 'rgba(20,241,149,0.04)',
-  },
-  moduleCardLocked: {
-    opacity: 0.5,
-  },
-  moduleIcon: {
-    width: 48, height: 48, borderRadius: 14,
-    backgroundColor: 'rgba(255,255,255,0.06)',
-    alignItems: 'center', justifyContent: 'center',
-  },
-  moduleIconLocked: {
-    backgroundColor: 'rgba(255,255,255,0.03)',
-  },
+  moduleCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: 16, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: 'rgba(255,255,255,0.07)', gap: 12 },
+  moduleCardCompleted: { borderColor: 'rgba(20,241,149,0.3)', backgroundColor: 'rgba(20,241,149,0.04)' },
+  moduleCardLocked: { opacity: 0.5 },
+  moduleIcon: { width: 48, height: 48, borderRadius: 14, backgroundColor: 'rgba(255,255,255,0.06)', alignItems: 'center', justifyContent: 'center' },
+  moduleIconLocked: { backgroundColor: 'rgba(255,255,255,0.03)' },
   moduleIconText: { fontSize: 24 },
   moduleInfo: { flex: 1 },
   moduleTitle: { fontSize: 15, fontWeight: '700', color: '#FFFFFF', marginBottom: 2 },
@@ -291,19 +244,15 @@ const styles = StyleSheet.create({
   lockedLabel: { fontSize: 11, color: 'rgba(255,255,255,0.25)' },
   completedCheck: { fontSize: 20 },
   arrow: { fontSize: 22, color: 'rgba(255,255,255,0.2)' },
-  navBar: {
-    flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center',
-    backgroundColor: '#0A1020', borderTopWidth: 1,
-    borderTopColor: 'rgba(125,239,251,0.1)', paddingVertical: 10, paddingBottom: 20,
-  },
+  navBar: { flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', backgroundColor: '#0A1020', borderTopWidth: 1, borderTopColor: 'rgba(125,239,251,0.1)', paddingVertical: 10, paddingBottom: 20 },
   navItem: { alignItems: 'center', gap: 4 },
   navIcon: { fontSize: 20 },
   navLabel: { fontSize: 10, color: 'rgba(255,255,255,0.35)' },
   navLabelActive: { color: '#7DEFFB' },
-  navPlayBtn: {
-    width: 52, height: 52, borderRadius: 26,
-    backgroundColor: '#7DEFFB', alignItems: 'center', justifyContent: 'center',
-    marginBottom: 8,
-  },
+  navPlayBtn: { width: 52, height: 52, borderRadius: 26, backgroundColor: '#7DEFFB', alignItems: 'center', justifyContent: 'center', marginBottom: 8 },
   navPlayIcon: { fontSize: 20, color: '#050A14' },
+  footerLinks: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 8, marginTop: 24, marginBottom: 8 },
+  footerLink: { fontSize: 12, color: 'rgba(125,239,251,0.5)' },
+  footerDivider: { fontSize: 12, color: 'rgba(255,255,255,0.2)' },
+  footerVersion: { textAlign: 'center', fontSize: 11, color: 'rgba(255,255,255,0.15)', marginBottom: 8 },
 });

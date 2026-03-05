@@ -1,8 +1,6 @@
 import {
   ConnectionProvider,
-  RPC_ENDPOINT,
 } from './components/providers/ConnectionProvider';
-import { clusterApiUrl } from '@solana/web3.js';
 import React, { useState, useEffect } from 'react';
 import { Alert } from 'react-native';
 import { AuthorizationProvider, useAuthorization } from './components/providers/AuthorizationProvider';
@@ -14,6 +12,10 @@ import QuizScreen from './screens/QuizScreen';
 import ModuleCompleteScreen from './screens/ModuleCompleteScreen';
 import BadgesScreen from './screens/BadgesScreen';
 import LeaderboardScreen from './screens/LeaderboardScreen';
+import CompletionScreen from './screens/CompletionScreen';
+import PrivacyScreen from './screens/PrivacyScreen';
+import TermsScreen from './screens/TermsScreen';
+import LicensesScreen from './screens/LicensesScreen';
 import {
   getCompletedModules,
   completeModule,
@@ -27,7 +29,10 @@ import {
   resetAllProgress,
 } from './src/progress';
 
-export type Screen = 'onboarding' | 'welcome' | 'home' | 'lesson' | 'quiz' | 'complete' | 'badges' | 'leaderboard';
+const MAINNET_RPC = 'https://api.mainnet-beta.solana.com';
+const TOTAL_MODULES = 10;
+
+export type Screen = 'onboarding' | 'welcome' | 'home' | 'lesson' | 'quiz' | 'complete' | 'badges' | 'leaderboard' | 'completion' | 'privacy' | 'terms' | 'licenses';
 
 export type QuizResult = {
   moduleId: number;
@@ -40,15 +45,13 @@ export type QuizResult = {
 
 function AppContent() {
   const { selectedAccount } = useAuthorization();
-  const [screen, setScreen] = useState<Screen | null>(null); // null = loading
+  const [screen, setScreen] = useState<Screen | null>(null);
   const [quizResult, setQuizResult] = useState<QuizResult | null>(null);
   const [activeModuleId, setActiveModuleId] = useState<number>(1);
-
   const [completedModules, setCompletedModules] = useState<number[]>([]);
   const [totalXP, setTotalXP] = useState(0);
   const [streak, setStreak] = useState(0);
 
-  // On mount — check onboarding + load progress
   useEffect(() => {
     const init = async () => {
       const [onboardingDone, completed, xp, currentStreak] = await Promise.all([
@@ -57,21 +60,14 @@ function AppContent() {
         getTotalXP(),
         getStreak(),
       ]);
-      setCompletedModules(completed);
+      setCompletedModules(completed ?? []);
       setTotalXP(xp);
       setStreak(currentStreak);
-
-      if (!onboardingDone) {
-        setScreen('onboarding');
-      } else {
-        // wallet check happens via selectedAccount
-        setScreen('home');
-      }
+      setScreen(onboardingDone ? 'home' : 'onboarding');
     };
     init();
   }, []);
 
-  // If wallet disconnects, go to welcome
   useEffect(() => {
     if (screen !== null && screen !== 'onboarding' && !selectedAccount) {
       setScreen('welcome');
@@ -95,12 +91,26 @@ function AppContent() {
     setScreen('complete');
   };
 
+  const handleModuleCompleteNext = async () => {
+    const updated = await getCompletedModules();
+    if (updated.length >= TOTAL_MODULES) {
+      setScreen('completion');
+    } else {
+      setScreen('home');
+    }
+  };
+
   const handleStartModule = (moduleId: number) => {
     setActiveModuleId(moduleId);
     setScreen('lesson');
   };
 
   const handlePlayNext = async () => {
+    const updated = await getCompletedModules();
+    if (updated.length >= TOTAL_MODULES) {
+      setScreen('completion');
+      return;
+    }
     const nextModule = await getNextUnlockedModule();
     setActiveModuleId(nextModule);
     setScreen('lesson');
@@ -112,76 +122,38 @@ function AppContent() {
       'Reset all progress, XP, streak and onboarding?',
       [
         { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Reset Everything',
-          style: 'destructive',
-          onPress: async () => {
-            await resetAllProgress();
-            setCompletedModules([]);
-            setTotalXP(0);
-            setStreak(0);
-            setScreen('onboarding');
-          },
-        },
+        { text: 'Reset Everything', style: 'destructive', onPress: async () => {
+          await resetAllProgress();
+          setCompletedModules([]);
+          setTotalXP(0);
+          setStreak(0);
+          setScreen('onboarding');
+        }},
       ]
     );
   };
 
-  // Loading
   if (screen === null) return null;
+  if (screen === 'onboarding') return <OnboardingScreen onFinish={handleOnboardingDone} />;
+  if (screen === 'privacy') return <PrivacyScreen onBack={() => setScreen('home')} />;
+  if (screen === 'terms') return <TermsScreen onBack={() => setScreen('home')} />;
+  if (screen === 'licenses') return <LicensesScreen onBack={() => setScreen('home')} />;
+  if (!selectedAccount) return <WelcomeScreen />;
+  if (screen === 'completion') return <CompletionScreen onBack={() => setScreen('home')} totalXP={totalXP} streak={streak} />;
 
-  if (screen === 'onboarding') {
-    return <OnboardingScreen onFinish={handleOnboardingDone} />;
-  }
-
-  if (!selectedAccount) {
-    return <WelcomeScreen />;
-  }
-
-  if (screen === 'lesson') {
-    return (
-      <LessonScreen
-        moduleId={activeModuleId}
-        onStartQuiz={() => setScreen('quiz')}
-        onBack={() => setScreen('home')}
-      />
-    );
-  }
-
-  if (screen === 'quiz') {
-    return (
-      <QuizScreen
-        moduleId={activeModuleId}
-        onComplete={handleQuizComplete}
-        onBack={() => setScreen('lesson')}
-      />
-    );
-  }
-
-  if (screen === 'complete' && quizResult) {
-    return (
-      <ModuleCompleteScreen
-        result={quizResult}
-        onContinue={() => setScreen('home')}
-        onRetry={() => setScreen('quiz')}
-      />
-    );
-  }
-
-  if (screen === 'badges') {
-    return (
-      <BadgesScreen
-        onBack={() => setScreen('home')}
-        completedModules={completedModules}
-        streak={streak}
-        totalXP={totalXP}
-      />
-    );
-  }
-
-  if (screen === 'leaderboard') {
-    return <LeaderboardScreen onBack={() => setScreen('home')} />;
-  }
+  if (screen === 'lesson') return (
+    <LessonScreen moduleId={activeModuleId} onStartQuiz={() => setScreen('quiz')} onBack={() => setScreen('home')} />
+  );
+  if (screen === 'quiz') return (
+    <QuizScreen moduleId={activeModuleId} onComplete={handleQuizComplete} onBack={() => setScreen('lesson')} />
+  );
+  if (screen === 'complete' && quizResult) return (
+    <ModuleCompleteScreen result={quizResult} onContinue={handleModuleCompleteNext} onRetry={() => setScreen('quiz')} />
+  );
+  if (screen === 'badges') return (
+    <BadgesScreen onBack={() => setScreen('home')} completedModules={completedModules} streak={streak} totalXP={totalXP} />
+  );
+  if (screen === 'leaderboard') return <LeaderboardScreen onBack={() => setScreen('home')} />;
 
   return (
     <HomeScreen
@@ -190,6 +162,9 @@ function AppContent() {
       onViewLeaderboard={() => setScreen('leaderboard')}
       onPlayNext={handlePlayNext}
       onDevReset={handleDevReset}
+      onPrivacy={() => setScreen('privacy')}
+      onTerms={() => setScreen('terms')}
+      onLicenses={() => setScreen('licenses')}
       completedModules={completedModules}
       totalXP={totalXP}
       streak={streak}
@@ -199,9 +174,7 @@ function AppContent() {
 
 export default function App() {
   return (
-    <ConnectionProvider
-      config={{ commitment: 'processed' }}
-      endpoint={clusterApiUrl(RPC_ENDPOINT)}>
+    <ConnectionProvider config={{ commitment: 'confirmed' }} endpoint={MAINNET_RPC}>
       <AuthorizationProvider>
         <AppContent />
       </AuthorizationProvider>
