@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View, Text, StyleSheet, ScrollView,
   TouchableOpacity, SafeAreaView, Alert,
@@ -6,6 +6,8 @@ import {
 import { useAuthorization } from '../components/providers/AuthorizationProvider';
 import { transact } from '@solana-mobile/mobile-wallet-adapter-protocol-web3js';
 import { isModuleUnlocked } from '../src/progress';
+import { getStreakState, StreakState } from '../util/streak';
+import StreakBanner from '../components/StreakBanner';
 
 const MODULES = [
   { id: 1, title: 'Crypto History', desc: 'The origin of blockchain and Bitcoin', icon: '₿', difficulty: 'Beginner', xp: 100, time: '5m' },
@@ -44,6 +46,11 @@ export default function HomeScreen({
   streak: number;
 }) {
   const { selectedAccount, deauthorizeSession } = useAuthorization();
+  const [streakState, setStreakState] = useState<StreakState | null>(null);
+
+  useEffect(() => {
+    getStreakState().then(setStreakState);
+  }, []);
 
   const shortAddress = selectedAccount
     ? `${selectedAccount.publicKey.toString().slice(0, 4)}...${selectedAccount.publicKey.toString().slice(-4)}`
@@ -120,6 +127,10 @@ export default function HomeScreen({
           <Text style={styles.navLabel}>Rank</Text>
         </TouchableOpacity>
       </View>
+
+      {streakState && (
+        <StreakBanner streak={streakState} accentColor="#7DEFFB" />
+      )}
 
       <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
         <TouchableOpacity style={styles.recommendedCard} onPress={onPlayNext}>

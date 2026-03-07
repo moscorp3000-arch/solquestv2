@@ -8,7 +8,7 @@ import { useConnection } from '../components/providers/ConnectionProvider';
 import { transact } from '@solana-mobile/mobile-wallet-adapter-protocol-web3js';
 import { PublicKey, SystemProgram, Transaction } from '@solana/web3.js';
 
-const TREASURY_WALLET = new PublicKey('Dq1jtEAStWzcR5Nv4EP3pZf4tSF75Gpn6hgZh9yxr4K5');
+const TREASURY_WALLET = new PublicKey('8LED9AaiG92Zr7LqJDBrK4XqLCyws6AyUaWKsw4183BT');
 const VERIFICATION_AMOUNT = 100;
 
 type Status = 'idle' | 'sending' | 'success' | 'failed';
@@ -63,20 +63,20 @@ export default function CompletionScreen({ onBack, totalXP, streak }: {
           <Text style={styles.trophy}>🏆</Text>
         </View>
 
-        <Text style={styles.title}>Alle modules voltooid!</Text>
+        <Text style={styles.title}>All modules completed!</Text>
         <Text style={styles.subtitle}>
-          Je hebt alle 10 modules van SolQuest doorlopen. Verificeer je wallet om in aanmerking te komen voor de Seeker Mobile Season 2 airdrop.
+          You've completed all 10 modules of SolQuest. Verify your wallet to create an on-chain record of your completion.
         </Text>
 
         {/* Stats */}
         <View style={styles.statsRow}>
           <View style={styles.statBox}>
             <Text style={styles.statValue}>⚡ {totalXP}</Text>
-            <Text style={styles.statLabel}>XP verdiend</Text>
+            <Text style={styles.statLabel}>XP earned</Text>
           </View>
           <View style={styles.statBox}>
             <Text style={styles.statValue}>🔥 {streak}</Text>
-            <Text style={styles.statLabel}>Dag streak</Text>
+            <Text style={styles.statLabel}>Day streak</Text>
           </View>
           <View style={styles.statBox}>
             <Text style={styles.statValue}>✅ 10</Text>
@@ -88,7 +88,7 @@ export default function CompletionScreen({ onBack, totalXP, streak }: {
           <View style={styles.infoRow}>
             <Text style={styles.infoIcon}>🔐</Text>
             <View style={{ flex: 1 }}>
-              <Text style={styles.infoLabel}>Jouw wallet</Text>
+              <Text style={styles.infoLabel}>Your wallet</Text>
               <Text style={styles.infoValue}>{shortAddress}</Text>
             </View>
           </View>
@@ -96,7 +96,7 @@ export default function CompletionScreen({ onBack, totalXP, streak }: {
           <View style={styles.infoRow}>
             <Text style={styles.infoIcon}>💸</Text>
             <View style={{ flex: 1 }}>
-              <Text style={styles.infoLabel}>Verificatiebedrag</Text>
+              <Text style={styles.infoLabel}>Verification amount</Text>
               <Text style={styles.infoValue}>0.000001 SOL (~$0.0001)</Text>
             </View>
           </View>
@@ -104,14 +104,14 @@ export default function CompletionScreen({ onBack, totalXP, streak }: {
           <View style={styles.infoRow}>
             <Text style={styles.infoIcon}>🎯</Text>
             <View style={{ flex: 1 }}>
-              <Text style={styles.infoLabel}>Doel</Text>
-              <Text style={styles.infoValue}>Season 2 Airdrop kwalificatie</Text>
+              <Text style={styles.infoLabel}>Purpose</Text>
+              <Text style={styles.infoValue}>On-chain proof of completion</Text>
             </View>
           </View>
         </View>
 
         <Text style={styles.disclaimer}>
-          Door te verificeren bevestig je dat je wallet adres mag worden opgeslagen als gekwalificeerde deelnemer voor toekomstige Seeker Mobile airdrops.
+          By verifying, you confirm that your wallet address may be stored as an on-chain record of completion.
         </Text>
       </View>
 
@@ -120,8 +120,8 @@ export default function CompletionScreen({ onBack, totalXP, streak }: {
           <View style={styles.successBox}>
             <Text style={styles.successIcon}>✅</Text>
             <View style={{ flex: 1 }}>
-              <Text style={styles.successTitle}>Wallet geverifieerd!</Text>
-              <Text style={styles.successSub}>Je bent gekwalificeerd voor Season 2.</Text>
+              <Text style={styles.successTitle}>Wallet verified!</Text>
+              <Text style={styles.successSub}>Your completion has been recorded on-chain.</Text>
               {txSignature && (
                 <Text style={styles.txHash} numberOfLines={1}>
                   TX: {txSignature.slice(0, 20)}...
@@ -132,13 +132,13 @@ export default function CompletionScreen({ onBack, totalXP, streak }: {
         ) : status === 'failed' ? (
           <View style={{ gap: 10 }}>
             <Text style={styles.failedText}>
-              ❌ Transactie mislukt. Controleer je SOL balance en probeer opnieuw.
+              ❌ Transaction failed. Check your SOL balance and try again.
             </Text>
             <TouchableOpacity style={styles.verifyBtn} onPress={handleVerify}>
-              <Text style={styles.verifyBtnText}>🔄 Opnieuw proberen</Text>
+              <Text style={styles.verifyBtnText}>🔄 Try again</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.skipBtn} onPress={onBack}>
-              <Text style={styles.skipBtnText}>Later doen →</Text>
+              <Text style={styles.skipBtnText}>Do this later →</Text>
             </TouchableOpacity>
           </View>
         ) : (
@@ -150,14 +150,14 @@ export default function CompletionScreen({ onBack, totalXP, streak }: {
               {status === 'sending' ? (
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                   <ActivityIndicator color="#050A14" size="small" />
-                  <Text style={styles.verifyBtnText}>Versturen...</Text>
+                  <Text style={styles.verifyBtnText}>Sending...</Text>
                 </View>
               ) : (
-                <Text style={styles.verifyBtnText}>🚀 Verificeer voor Season 2</Text>
+                <Text style={styles.verifyBtnText}>🚀 Verify on-chain</Text>
               )}
             </TouchableOpacity>
             <TouchableOpacity style={styles.skipBtn} onPress={onBack}>
-              <Text style={styles.skipBtnText}>Overslaan →</Text>
+              <Text style={styles.skipBtnText}>Skip →</Text>
             </TouchableOpacity>
           </View>
         )}

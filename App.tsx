@@ -28,6 +28,7 @@ import {
   setOnboardingDone,
   resetAllProgress,
 } from './src/progress';
+import { recordOpen, resetStreak } from './util/streak';
 
 const MAINNET_RPC = 'https://api.mainnet-beta.solana.com';
 const TOTAL_MODULES = 10;
@@ -64,6 +65,8 @@ function AppContent() {
       setTotalXP(xp);
       setStreak(currentStreak);
       setScreen(onboardingDone ? 'home' : 'onboarding');
+      // Record daily open for StreakBanner
+      recordOpen();
     };
     init();
   }, []);
@@ -124,6 +127,7 @@ function AppContent() {
         { text: 'Cancel', style: 'cancel' },
         { text: 'Reset Everything', style: 'destructive', onPress: async () => {
           await resetAllProgress();
+          await resetStreak();
           setCompletedModules([]);
           setTotalXP(0);
           setStreak(0);
