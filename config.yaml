@@ -5,13 +5,13 @@ description: |
   DeFi, NFTs, and Web3. Earn a micro-reward of 0.000001 SOL upon completion. 
   Built by SeekerLabs.
 developer: SeekerLabs
-website: https://seekerlabs.xyz
+website: https://seekerlabs-website.vercel.app
 contact: seekerlabs@proton.me
 cryptocurrencies:
   - SOL
 android_package: com.solquestv2
 android_app_store_url: https://github.com/moscorp3000-arch/solquestv2
-banner_image_url: https://seekerlabs.xyz/assets/solquest_banner.png
+banner_image_url: https://seekerlabs-website.vercel.app/assets/solquest_banner.png
 tags:
   - education
   - quiz
