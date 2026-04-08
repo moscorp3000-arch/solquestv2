@@ -12,21 +12,32 @@ export default function PrivacyScreen({ onBack }: { onBack: () => void }) {
       </View>
       <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
         <View style={styles.content}>
-          <Text style={styles.lastUpdated}>Last updated: March 2026</Text>
-          <Text style={styles.intro}>SolQuest is committed to protecting your privacy. This policy explains how we handle information when you use our app.</Text>
+          <Text style={styles.lastUpdated}>Last updated: April 2, 2026</Text>
+
+          <View style={styles.highlight}>
+            <Text style={styles.highlightText}>
+              <Text style={styles.bold}>Short version: </Text>
+              SeekerLabs collects zero personal data. We do not track you, store your information, or sell anything. Your wallet stays yours.
+            </Text>
+          </View>
+
           {[
-            { title: '1. Information We Collect', text: 'We do not collect personal data.\n\nSolQuest is a fully local application. All progress data is stored exclusively on your device using AsyncStorage and is never transmitted to any server.\n\nWe do not collect:\n• Your name, email address, or contact information\n• Location data\n• Device identifiers or advertising IDs\n• Usage analytics or behavioral data' },
-            { title: '2. Blockchain & Wallet Data', text: 'When you connect your Solana wallet via the Mobile Wallet Adapter, we only read your public wallet address. We never have access to your private keys or seed phrase.\n\nAll blockchain transactions are initiated by you and signed exclusively within your wallet.' },
-            { title: '3. Wallet Verification & Airdrop', text: 'Upon completing all modules, you may optionally submit a small verification transaction (≈ 0.000001 SOL).\n\nThis transaction:\n• Proves you have an active Solana wallet\n• Qualifies your wallet for Seeker Mobile Season 2 airdrop\n• Records your public wallet address on-chain\n\nThis is voluntary. Your wallet address is publicly visible on the Solana blockchain.' },
-            { title: '4. Local Storage', text: 'The following data is stored locally only:\n\n• Learning progress (completed modules, XP)\n• Streak count\n• Language preference\n\nThis data never leaves your device and can be deleted by uninstalling the app.' },
-            { title: '5. Contact', text: 'Questions about this Privacy Policy? Contact us via the Solana Mobile dApp Store listing or our official channels.' },
+            { title: '1. Who We Are', text: 'SeekerLabs builds mobile apps for the Solana Mobile ecosystem. Our apps — SeekerQuest and SolQuest — run on Solana Mobile Seeker devices.\n\nContact: eds3000@proton.me' },
+            { title: '2. Data We Do NOT Collect', text: 'We do not collect, store, or process:\n\n• Personal information (name, email, phone)\n• Location data\n• Device identifiers or advertising IDs\n• Usage analytics or behavioral tracking\n• Private keys or seed phrases — ever' },
+            { title: '3. Blockchain Interactions', text: 'Our apps interact with Solana mainnet. Transactions are public by nature. When you complete a module or earn a badge, a transaction is recorded on-chain. This is how the Solana network works.\n\nAll signing happens through Seed Vault — Solana Mobile\'s secure hardware enclave. We never see your private keys.' },
+            { title: '4. Wallet Permissions', text: 'We only request:\n\n• Sign transactions — to verify module completion on-chain\n• Public wallet address — to associate badges with your wallet' },
+            { title: '5. Third-Party Services', text: '• Helius RPC — Solana node provider\n• Jupiter Aggregator — token swap routing\n• Metaplex — compressed NFT badge minting\n\nThese services only receive your public wallet address.' },
+            { title: '6. Children\'s Privacy', text: 'Our apps are not directed at children under 13. We do not knowingly collect information from children.' },
+            { title: '7. Contact', text: 'Questions? Email: eds3000@proton.me' },
           ].map((s, i) => (
             <View key={i} style={styles.section}>
               <Text style={styles.sectionTitle}>{s.title}</Text>
               <Text style={styles.sectionText}>{s.text}</Text>
             </View>
           ))}
-          <View style={styles.footer}><Text style={styles.footerText}>⚡ SolQuest — Built for Solana Mobile</Text></View>
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>SeekerLabs · eds3000@proton.me</Text>
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -42,9 +53,11 @@ const styles = StyleSheet.create({
   scroll: { flex: 1 },
   content: { padding: 20 },
   lastUpdated: { color: 'rgba(255,255,255,0.3)', fontSize: 12, marginBottom: 12 },
-  intro: { color: 'rgba(255,255,255,0.6)', fontSize: 14, lineHeight: 22, marginBottom: 20 },
+  highlight: { backgroundColor: 'rgba(153,69,255,0.08)', borderLeftWidth: 3, borderLeftColor: '#9945FF', padding: 14, borderRadius: 8, marginBottom: 20 },
+  highlightText: { color: 'rgba(255,255,255,0.8)', fontSize: 14, lineHeight: 22 },
+  bold: { fontWeight: '700', color: '#FFFFFF' },
   section: { backgroundColor: 'rgba(255,255,255,0.04)', borderWidth: 1, borderColor: 'rgba(125,239,251,0.1)', borderRadius: 16, padding: 18, marginBottom: 12 },
-  sectionTitle: { color: '#7DEFFB', fontSize: 15, fontWeight: '800', marginBottom: 10 },
+  sectionTitle: { color: '#9945FF', fontSize: 15, fontWeight: '800', marginBottom: 10 },
   sectionText: { color: 'rgba(255,255,255,0.6)', fontSize: 13, lineHeight: 22 },
   footer: { alignItems: 'center', paddingVertical: 32 },
   footerText: { color: 'rgba(255,255,255,0.2)', fontSize: 12 },
