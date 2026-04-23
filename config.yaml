@@ -1,17 +1,20 @@
-title: SolQuestV2
+title: SolQuest
 description: |
-  SolQuestV2 is a Solana quiz app for the Seeker phone.
-  Test your knowledge across 10 modules with 71 shuffled questions about Solana, 
-  DeFi, NFTs, and Web3. Earn a micro-reward of 0.000001 SOL upon completion. 
+  SolQuest is a Solana quiz app for the Seeker phone.
+  Test your knowledge across 10 modules with 71 shuffled questions about Solana,
+  DeFi, NFTs, and Web3. Earn a micro-reward of 0.000001 SOL upon completion.
   Built by SeekerLabs.
 developer: SeekerLabs
 website: https://seekerlabs-website.vercel.app
-contact: seekerlabs@proton.me
+contact: eds3000@proton.me
+version: 1.0.2
+privacy_policy_url: https://moscorp3000-arch.github.io/solquestv2/privacy.html
+terms_url: https://moscorp3000-arch.github.io/solquestv2/terms.html
+download_url: https://github.com/moscorp3000-arch/solquestv2/releases/download/v1.0.2/app-release.apk
 cryptocurrencies:
   - SOL
 android_package: com.solquestv2
 android_app_store_url: https://github.com/moscorp3000-arch/solquestv2
-banner_image_url: https://seekerlabs-website.vercel.app/assets/solquest_banner.png
 tags:
   - education
   - quiz
