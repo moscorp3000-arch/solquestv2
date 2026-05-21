@@ -7,13 +7,13 @@ description: |
 developer: SeekerLabs
 website: https://seekerlabs-website.vercel.app
 contact: eds3000@proton.me
-version: 1.0.2
-privacy_policy_url: https://moscorp3000-arch.github.io/solquestv2/privacy.html
-terms_url: https://moscorp3000-arch.github.io/solquestv2/terms.html
+version: 1.0.3
+privacy_policy_url: https://seekerlabs-website.vercel.app/privacy-policy
+terms_url: https://seekerlabs-website.vercel.app/terms
 download_url: https://github.com/moscorp3000-arch/solquestv2/releases/download/v1.0.3/app-release.apk
 cryptocurrencies:
   - SOL
-android_package: com.solquestv2
+android_package: com.solquest
 android_app_store_url: https://github.com/moscorp3000-arch/solquestv2
 tags:
   - education
