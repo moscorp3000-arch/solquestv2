@@ -14,7 +14,7 @@ download_url: https://github.com/moscorp3000-arch/solquestv2/releases/download/v
 cryptocurrencies:
   - SOL
 android_package: com.solquest
-android_app_store_url: https://github.com/moscorp3000-arch/solquestv2
+android_app_store_url: https://github.com/moscorp3000-arch/solquestv2/releases/download/v1.0.3/app-release.apk
 tags:
   - education
   - quiz
